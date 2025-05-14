@@ -23,8 +23,8 @@ mkdir -p /opt/logging-stack/data/{loki,grafana,fluent-bit}
 
 # Copy configuration files
 echo "Copying configuration files..."
-cp -r config/* /opt/logging-stack/config/
-cp -r data/* /opt/logging-stack/data/
+cp -r ../config/* /opt/logging-stack/config/
+cp -r ../data/* /opt/logging-stack/data/
 
 # Set up SELinux contexts if SELinux is enabled
 if command -v sestatus >/dev/null 2>&1; then
