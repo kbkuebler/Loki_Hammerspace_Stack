@@ -51,6 +51,13 @@ podman run -d --name fluentbit --network logging-stack \
     fluent/fluent-bit:latest \
     -c /fluent-bit/etc/fluent-bit.conf
 
+# Create and set permissions for Grafana data directory
+echo "Setting up Grafana data directory..."
+mkdir -p /opt/logging-stack/data/grafana
+chown -R 472:472 /opt/logging-stack/data/grafana  # 472 is the grafana user ID in the container
+
+# Start Grafana
+echo "Starting Grafana..."
 podman run -d --name grafana --network logging-stack \
     -v /opt/logging-stack/config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro \
     -v /opt/logging-stack/data/grafana:/var/lib/grafana \
