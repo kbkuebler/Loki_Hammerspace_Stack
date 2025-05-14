@@ -32,7 +32,7 @@ cleanup_pod
 
 # Start the network
 echo "Starting network..."
-systemctl start logging-stack.network
+systemctl start logging-stack
 
 # Start the containers
 echo "Starting containers..."
@@ -54,3 +54,18 @@ echo "Fluent Bit metrics: http://localhost:2020"
 # Print container status
 echo -e "\nContainer Status:"
 podman ps --pod logging-stack
+
+# Set up quadlet directory
+echo "Setting up quadlet configuration..."
+mkdir -p /etc/containers/systemd
+
+# Copy and rename container and network files
+echo "Installing quadlet configurations..."
+cp /opt/logging-stack/config/fluent-bit/fluent-bit.container /etc/containers/systemd/
+cp /opt/logging-stack/config/loki/loki.container /etc/containers/systemd/
+cp /opt/logging-stack/config/grafana/grafana.container /etc/containers/systemd/
+cp /opt/logging-stack/config/logging-stack.network /etc/containers/systemd/
+
+# Reload systemd to recognize new units
+echo "Reloading systemd..."
+systemctl daemon-reload
