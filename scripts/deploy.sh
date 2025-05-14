@@ -32,13 +32,30 @@ cleanup_pod
 
 # Start the network
 echo "Starting network..."
-systemctl start logging-stack
+podman network create logging-stack
 
 # Start the containers
 echo "Starting containers..."
-systemctl start loki.container
-systemctl start fluent-bit.container
-systemctl start grafana.container
+podman run -d --name loki --network logging-stack \
+    -v /opt/logging-stack/config/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro \
+    -v /opt/logging-stack/data/loki:/loki \
+    -p 3100:3100 \
+    grafana/loki:latest \
+    -config.file=/etc/loki/loki-config.yaml
+
+podman run -d --name fluentbit --network logging-stack \
+    -v /opt/logging-stack/config/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro \
+    -v /opt/logging-stack/config/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro \
+    -p 514:514/udp \
+    -p 2020:2020 \
+    fluent/fluent-bit:latest \
+    -c /fluent-bit/etc/fluent-bit.conf
+
+podman run -d --name grafana --network logging-stack \
+    -v /opt/logging-stack/config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro \
+    -v /opt/logging-stack/data/grafana:/var/lib/grafana \
+    -p 3000:3000 \
+    grafana/grafana:latest
 
 # Wait for services to be ready
 echo "Waiting for services to be ready..."
@@ -53,19 +70,4 @@ echo "Fluent Bit metrics: http://localhost:2020"
 
 # Print container status
 echo -e "\nContainer Status:"
-podman ps --pod logging-stack
-
-# Set up quadlet directory
-echo "Setting up quadlet configuration..."
-mkdir -p /etc/containers/systemd
-
-# Copy and rename container and network files
-echo "Installing quadlet configurations..."
-cp /opt/logging-stack/config/fluent-bit/fluent-bit.container /etc/containers/systemd/
-cp /opt/logging-stack/config/loki/loki.container /etc/containers/systemd/
-cp /opt/logging-stack/config/grafana/grafana.container /etc/containers/systemd/
-cp /opt/logging-stack/config/logging-stack.network /etc/containers/systemd/
-
-# Reload systemd to recognize new units
-echo "Reloading systemd..."
-systemctl daemon-reload
+podman ps
