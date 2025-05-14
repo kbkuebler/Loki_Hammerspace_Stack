@@ -1,0 +1,16 @@
+# config/fluent-bit/fluent-bit.container
+[Unit]
+Description=Fluent Bit container
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=fluent/fluent-bit:latest
+Volume=/opt/logging-stack/config/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+Volume=/opt/logging-stack/config/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+Network=logging-stack
+PublishPort=514:514/udp
+PublishPort=2020:2020
+
+[Service]
+Restart=always

@@ -1,0 +1,14 @@
+[Unit]
+Description=Grafana container
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=grafana/grafana:latest
+Volume=/opt/logging-stack/config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+Volume=/opt/logging-stack/data/grafana:/var/lib/grafana
+Network=logging-stack
+PublishPort=3000:3000
+
+[Service]
+Restart=always

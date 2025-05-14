@@ -1,0 +1,14 @@
+[Unit]
+Description=Loki container
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=grafana/loki:latest
+Volume=/opt/logging-stack/config/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+Volume=/opt/logging-stack/data/loki:/loki
+Network=logging-stack
+PublishPort=3100:3100
+
+[Service]
+Restart=always
