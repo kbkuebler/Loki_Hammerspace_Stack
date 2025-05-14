@@ -1,4 +1,3 @@
-# config/loki/loki-config.yaml
 auth_enabled: false
 
 server:
@@ -22,18 +21,16 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+      retention_period: 168h
 
 storage_config:
   boltdb_shipper:
     active_index_directory: /loki/index
     cache_location: /loki/cache
+    shared_store: filesystem
   filesystem:
     directory: /loki/chunks
 
 limits_config:
   ingestion_rate_mb: 4
   ingestion_burst_size_mb: 6
-
-table_manager:
-  retention_deletes_enabled: true
-  retention_period: 168h
