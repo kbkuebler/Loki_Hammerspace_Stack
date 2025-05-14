@@ -37,8 +37,13 @@ fi
 # Set up quadlet directory
 echo "Setting up quadlet configuration..."
 mkdir -p /etc/containers/systemd
-cp /opt/logging-stack/config/*.container /etc/containers/systemd/
-cp /opt/logging-stack/config/*.network /etc/containers/systemd/
+
+# Copy container and network files to systemd directory
+echo "Installing quadlet configurations..."
+cp /opt/logging-stack/config/fluent-bit/fluent-bit.container /etc/containers/systemd/
+cp /opt/logging-stack/config/loki/loki.container /etc/containers/systemd/
+cp /opt/logging-stack/config/grafana/grafana.container /etc/containers/systemd/
+cp /opt/logging-stack/config/logging-stack.network /etc/containers/systemd/
 
 # Reload systemd to recognize new units
 echo "Reloading systemd..."

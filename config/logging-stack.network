@@ -1,2 +1,12 @@
+# config/logging-stack.network
+[Unit]
+Description=Logging Stack Network
+Wants=network-online.target
+After=network-online.target
+
 [Network]
 Name=logging-stack
+Driver=bridge
+
+[Install]
+WantedBy=multi-user.target
